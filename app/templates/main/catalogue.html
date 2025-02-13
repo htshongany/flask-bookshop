@@ -1,16 +1,76 @@
 {% extends 'base.html' %}
 
-{% block title %}Catalogue - Le Monde des Livres{% endblock %}
+{% block title %}CATALOGUE - LE MONDE DES LIVRES{% endblock %}
 
 {% block content %}
-<h2>Catalogue des livres</h2>
-<ul>
-    {% for book in books %}
-    <li>
-        <a href="{{ url_for('main.book_details', book_id=book.id) }}">{{ book.title }}</a> par {{ book.author }}
-        - {{ book.price }} €
-        <a href="{{ url_for('main.add_to_cart', book_id=book.id) }}">Ajouter au panier</a>
-    </li>
-    {% endfor %}
-</ul>
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="bg-white border-2 border-amber-800 shadow-[4px_4px_0_#78350f] p-6 sm:p-8">
+        <h2 class="text-2xl sm:text-3xl font-bold text-amber-900 mb-6 uppercase underline decoration-amber-500">
+            CATALOGUE COMPLET
+        </h2>
+
+        <!-- Barre de recherche -->
+        <form method="get" action="{{ url_for('main.catalogue') }}" class="mb-6">
+            <input type="text" name="query" value="{{ query }}" placeholder="Rechercher un livre ou un auteur" class="border-2 border-amber-300 px-4 py-2 mb-2">
+            <button type="submit" class="bg-amber-700 hover:bg-amber-800 text-white px-4 py-2 text-sm border-2 border-amber-900 shadow-[2px_2px_0_#78350f] hover:shadow-[3px_3px_0_#78350f] transition-all uppercase">Rechercher</button>
+        </form>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for book in books.items %}
+            <div class="border-2 border-amber-300 p-4 hover:shadow-[3px_3px_0_#78350f] transition-all">
+                <!-- Image du livre (placeholder) -->
+                <div class="h-48 bg-amber-100 mb-4 flex items-center justify-center">
+                    <span class="text-amber-700 text-sm">IMAGE DU LIVRE</span>
+                </div>
+                
+                <h3 class="text-lg font-bold text-amber-900">
+                    <a href="{{ url_for('main.book_details', book_id=book.id) }}" 
+                       class="hover:text-amber-700 transition-colors">
+                        {{ book.title|upper }}
+                    </a>
+                </h3>
+                
+                <p class="text-sm text-amber-700 mb-2">Par {{ book.author }}</p>
+                <p class="text-lg font-bold text-amber-900 mb-4">{{ book.price }} €</p>
+                
+                <a href="{{ url_for('main.add_to_cart', book_id=book.id) }}" 
+                   class="inline-block bg-amber-700 hover:bg-amber-800 text-white px-4 py-2 text-sm 
+                          border-2 border-amber-900 shadow-[2px_2px_0_#78350f] hover:shadow-[3px_3px_0_#78350f] 
+                          transition-all uppercase">
+                    Ajouter au panier
+                </a>
+            </div>
+            {% else %}
+            <p class="text-amber-700 col-span-full text-center py-8">
+                Aucun livre disponible pour le moment
+            </p>
+            {% endfor %}
+        </div>
+
+        {% if books.pages > 1 %}
+        <!-- Pagination -->
+        <div class="mt-6 flex justify-center space-x-1">
+            {% if books.has_prev %}
+                <a href="{{ url_for('main.catalogue', page=books.prev_num, query=query) }}" class="px-4 py-2 bg-amber-700 hover:bg-amber-800 text-white border-2 border-amber-900 shadow-[2px_2px_0_#78350f] hover:shadow-[3px_3px_0_#78350f] transition-all">«</a>
+            {% endif %}
+
+            {% for page_num in books.iter_pages(left_edge=2, right_edge=2, left_current=2, right_current=2) %}
+                {% if page_num %}
+                    {% if page_num != books.page %}
+                        <a href="{{ url_for('main.catalogue', page=page_num, query=query) }}" class="px-4 py-2 bg-amber-700 hover:bg-amber-800 text-white border-2 border-amber-900 shadow-[2px_2px_0_#78350f] hover:shadow-[3px_3px_0_#78350f] transition-all">{{ page_num }}</a>
+                    {% else %}
+                        <span class="px-4 py-2 bg-amber-900 text-white border-2 border-amber-900 shadow-[2px_2px_0_#78350f]">{{ page_num }}</span>
+                    {% endif %}
+                {% else %}
+                    <span class="px-4 py-2">…</span>
+                {% endif %}
+            {% endfor %}
+
+            {% if books.has_next %}
+                <a href="{{ url_for('main.catalogue', page=books.next_num, query=query) }}" class="px-4 py-2 bg-amber-700 hover:bg-amber-800 text-white border-2 border-amber-900 shadow-[2px_2px_0_#78350f] hover:shadow-[3px_3px_0_#78350f] transition-all">»</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
 {% endblock %}

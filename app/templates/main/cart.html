@@ -1,44 +1,107 @@
 {% extends 'base.html' %}
 
-{% block title %}Votre panier - Le Monde des Livres{% endblock %}
+{% block title %}VOTRE PANIER - LE MONDE DES LIVRES{% endblock %}
 
 {% block content %}
-<h2>Votre panier</h2>
-{% if books %}
-<table border="1">
-    <tr>
-        <th>Livre</th>
-        <th>Quantité</th>
-        <th>Sous-total</th>
-        <th>Actions</th>
-    </tr>
-    {% for item in books %}
-    <tr>
-        <td>{{ item.book.title }}</td>
-        <td>
-            <form action="{{ url_for('main.update_cart', book_id=item.book.id) }}" method="POST">
-                <input type="number" name="quantity" value="{{ item.quantity }}" min="0">
-                <button type="submit">Mettre à jour</button>
-            </form>
-        </td>
-        <td>{{ item.subtotal }} €</td>
-        <td>
-            <form action="{{ url_for('main.update_cart', book_id=item.book.id) }}" method="POST">
-                <input type="hidden" name="quantity" value="0">
-                <button type="submit">Retirer</button>
-            </form>
-        </td>
-    </tr>
-    {% endfor %}
-    <tr>
-        <td colspan="2"><strong>Total :</strong></td>
-        <td colspan="2">{{ total }} €</td>
-    </tr>
-</table>
-<a href="{{ url_for('main.checkout') }}">Passer la commande</a><br>
-<a href="{{ url_for('main.clear_cart') }}">Vider le panier</a>
-{% else %}
-<p>Votre panier est vide.</p>
-{% endif %}
-<a href="{{ url_for('main.catalogue') }}">Continuer vos achats</a>
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="bg-white border-2 border-amber-800 shadow-[4px_4px_0_#78350f] p-6 sm:p-8">
+        <h2 class="text-2xl sm:text-3xl font-bold text-amber-900 mb-6 uppercase underline decoration-amber-500">
+            VOTRE PANIER
+        </h2>
+
+        {% if books %}
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-amber-200">
+                <thead class="bg-amber-50">
+                    <tr>
+                        <th class="px-4 py-3 text-left text-sm font-bold text-amber-900 uppercase">LIVRE</th>
+                        <th class="px-4 py-3 text-left text-sm font-bold text-amber-900 uppercase">QUANTITÉ</th>
+                        <th class="px-4 py-3 text-left text-sm font-bold text-amber-900 uppercase">SOUS-TOTAL</th>
+                        <th class="px-4 py-3 text-left text-sm font-bold text-amber-900 uppercase">ACTIONS</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-amber-200">
+                    {% for item in books %}
+                    <tr class="hover:bg-amber-50 transition-colors">
+                        <td class="px-4 py-3 text-sm text-amber-900">
+                            {{ item.book.title|upper }}
+                        </td>
+                        <td class="px-4 py-3">
+                            <form action="{{ url_for('main.update_cart', book_id=item.book.id) }}" method="POST" class="flex items-center gap-2">
+                                <input type="number" name="quantity" value="{{ item.quantity }}" min="0" max="10"
+                                       class="w-20 px-2 py-1 border-2 border-amber-300 bg-amber-50 focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
+                                <button type="submit" 
+                                        class="bg-amber-700 hover:bg-amber-800 text-white px-3 py-1 text-sm 
+                                               border-2 border-amber-900 shadow-[2px_2px_0_#78350f] hover:shadow-[3px_3px_0_#78350f] 
+                                               transition-all uppercase">
+                                    Mettre à jour
+                                </button>
+                            </form>
+                        </td>
+                        <td class="px-4 py-3 text-sm font-bold text-amber-900">
+                            {{ item.subtotal }} €
+                        </td>
+                        <td class="px-4 py-3">
+                            <form action="{{ url_for('main.update_cart', book_id=item.book.id) }}" method="POST">
+                                <input type="hidden" name="quantity" value="0">
+                                <button type="submit" 
+                                        class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 text-sm 
+                                               border-2 border-red-900 shadow-[2px_2px_0_#7f1d1d] hover:shadow-[3px_3px_0_#7f1d1d] 
+                                               transition-all uppercase">
+                                    Retirer
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot class="bg-amber-50">
+                    <tr>
+                        <td colspan="2" class="px-4 py-3 text-right text-sm font-bold text-amber-900 uppercase">
+                            TOTAL :
+                        </td>
+                        <td colspan="2" class="px-4 py-3 text-sm font-bold text-amber-900">
+                            {{ total }} €
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <!-- Actions panier -->
+        <div class="mt-8 flex flex-col sm:flex-row gap-4">
+            <a href="{{ url_for('main.checkout') }}" 
+               class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 text-center 
+                      border-2 border-green-900 shadow-[3px_3px_0_#166534] hover:shadow-[4px_4px_0_#166534] 
+                      transition-all uppercase font-bold flex-1">
+                PASSER LA COMMANDE
+            </a>
+            
+            <a href="{{ url_for('main.clear_cart') }}" 
+               class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 text-center 
+                      border-2 border-red-900 shadow-[3px_3px_0_#7f1d1d] hover:shadow-[4px_4px_0_#7f1d1d] 
+                      transition-all uppercase font-bold flex-1">
+                VIDER LE PANIER
+            </a>
+        </div>
+
+        {% else %}
+        <div class="text-center py-8">
+            <p class="text-lg text-amber-700 mb-4">Votre panier est vide.</p>
+            <svg class="w-16 h-16 mx-auto text-amber-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+            </svg>
+        </div>
+        {% endif %}
+
+        <div class="mt-8 text-center">
+            <a href="{{ url_for('main.catalogue') }}" 
+               class="bg-amber-700 hover:bg-amber-800 text-white px-6 py-3 
+                      border-2 border-amber-900 shadow-[3px_3px_0_#78350f] hover:shadow-[4px_4px_0_#78350f] 
+                      transition-all uppercase font-bold inline-block">
+                CONTINUER VOS ACHATS
+            </a>
+        </div>
+    </div>
+</div>
 {% endblock %}
