@@ -1,40 +1,80 @@
 {% extends 'base.html' %}
 
-{% block title %}Inscription{% endblock %}
+{% block title %}INSCRIPTION{% endblock %}
 
 {% block content %}
-<h2>Inscription</h2>
-<form method="POST" action="{{ url_for('auth.register') }}">
-    {{ form.hidden_tag() }}
-    <p>
-        {{ form.username.label }}<br>
-        {{ form.username(size=32) }}<br>
-        {% for error in form.username.errors %}
-            <span style="color: red;">{{ error }}</span>
-        {% endfor %}
-    </p>
-    <p>
-        {{ form.email.label }}<br>
-        {{ form.email(size=32) }}<br>
-        {% for error in form.email.errors %}
-            <span style="color: red;">{{ error }}</span>
-        {% endfor %}
-    </p>
-    <p>
-        {{ form.password.label }}<br>
-        {{ form.password(size=32) }}<br>
-        {% for error in form.password.errors %}
-            <span style="color: red;">{{ error }}</span>
-        {% endfor %}
-    </p>
-    <p>
-        {{ form.confirm_password.label }}<br>
-        {{ form.confirm_password(size=32) }}<br>
-        {% for error in form.confirm_password.errors %}
-            <span style="color: red;">{{ error }}</span>
-        {% endfor %}
-    </p>
-    <p>{{ form.submit() }}</p>
-</form>
-<p>Déjà un compte ? <a href="{{ url_for('auth.login') }}">Connectez-vous ici</a>.<a href="{{ url_for('main.index') }}">Retour à l'accueil</a></p>
+<div class="max-w-3xl mx-auto">
+    <div class="bg-white border-2 border-amber-800 shadow-[4px_4px_0_#78350f] p-6 sm:p-8">
+        <h2 class="text-2xl sm:text-3xl font-bold text-amber-900 mb-6 underline decoration-amber-500 uppercase">
+            INSCRIPTION
+        </h2>
+        
+        <form method="POST" action="{{ url_for('auth.register') }}" class="space-y-6">
+            {{ form.hidden_tag() }}
+
+            <!-- Nom d'utilisateur -->
+            <div>
+                <label class="block text-sm sm:text-base font-bold text-amber-900 uppercase mb-2">
+                    {{ form.username.label }}
+                </label>
+                {{ form.username(class="w-full px-4 py-3 border-2 border-amber-400 bg-amber-50 focus:ring-2 focus:ring-amber-600 focus:border-amber-600") }}
+                {% for error in form.username.errors %}
+                    <p class="mt-2 text-red-600 text-sm">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <!-- Email -->
+            <div>
+                <label class="block text-sm sm:text-base font-bold text-amber-900 uppercase mb-2">
+                    {{ form.email.label }}
+                </label>
+                {{ form.email(class="w-full px-4 py-3 border-2 border-amber-400 bg-amber-50 focus:ring-2 focus:ring-amber-600 focus:border-amber-600") }}
+                {% for error in form.email.errors %}
+                    <p class="mt-2 text-red-600 text-sm">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <!-- Mot de passe -->
+            <div>
+                <label class="block text-sm sm:text-base font-bold text-amber-900 uppercase mb-2">
+                    {{ form.password.label }}
+                </label>
+                {{ form.password(class="w-full px-4 py-3 border-2 border-amber-400 bg-amber-50 focus:ring-2 focus:ring-amber-600 focus:border-amber-600") }}
+                {% for error in form.password.errors %}
+                    <p class="mt-2 text-red-600 text-sm">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <!-- Confirmation mot de passe -->
+            <div>
+                <label class="block text-sm sm:text-base font-bold text-amber-900 uppercase mb-2">
+                    {{ form.confirm_password.label }}
+                </label>
+                {{ form.confirm_password(class="w-full px-4 py-3 border-2 border-amber-400 bg-amber-50 focus:ring-2 focus:ring-amber-600 focus:border-amber-600") }}
+                {% for error in form.confirm_password.errors %}
+                    <p class="mt-2 text-red-600 text-sm">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <!-- Bouton d'inscription -->
+            <button type="submit" class="w-full mt-6 px-6 py-3 bg-amber-700 hover:bg-amber-800 text-white font-bold border-2 border-amber-900 shadow-[3px_3px_0_#78350f] hover:shadow-[4px_4px_0_#78350f] transition-all uppercase">
+                S'INSCRIRE
+            </button>
+        </form>
+
+        <div class="mt-8 text-center space-y-3">
+            <p class="text-sm sm:text-base text-amber-700">
+                DÉJÀ UN COMPTE ? 
+                <a href="{{ url_for('auth.login') }}" class="font-bold text-amber-900 hover:text-amber-700 underline decoration-dotted">
+                    CONNEXION ICI
+                </a>
+            </p>
+            <p class="text-sm sm:text-base text-amber-700">
+                <a href="{{ url_for('main.index') }}" class="font-bold text-amber-900 hover:text-amber-700 underline decoration-dotted">
+                    ← RETOUR À L'ACCUEIL
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
 {% endblock %}
