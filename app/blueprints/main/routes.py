@@ -8,12 +8,24 @@ from flask_login import login_required, current_user
 
 @main_bp.route('/')
 def index():
-    return render_template('main/index.html')
+    # Récupérer les 3 livres les plus récents
+    recent_books = Book.query.order_by(Book.id.desc()).limit(3).all()
+    return render_template('main/index.html', recent_books=recent_books)
 
 @main_bp.route('/catalogue')
 def catalogue():
-    books = Book.query.all()
-    return render_template('main/catalogue.html', books=books)
+    query = request.args.get('query', '')
+    page = request.args.get('page', 1, type=int)
+    
+    if query:
+        books = Book.query.filter((Book.title.ilike(f'%{query}%')) | (Book.author.ilike(f'%{query}%'))).paginate(page=page, per_page=3)
+    else:
+        books = Book.query.paginate(page=page, per_page=6)
+    
+    return render_template('main/catalogue.html', books=books, query=query)
+
+    
+    return render_template('main/catalogue.html', books=books, query=query)
 
 @main_bp.route('/book/<int:book_id>')
 def book_details(book_id):
@@ -122,4 +134,28 @@ def checkout():
 @login_required
 def my_orders():
     orders = Order.query.filter_by(user_id=current_user.id).order_by(Order.date_ordered.desc()).all()
-    return render_template('main/my_orders.html', orders=orders)
+    orders_with_totals = [(order, sum(item.quantity * item.book.price for item in order.order_items)) for order in orders]
+
+    return render_template('main/my_orders.html', orders_with_totals=orders_with_totals)
+
+# Route pour annuler une commande
+@main_bp.route('/cancel_order/<int:order_id>', methods=['POST'])
+@login_required
+def cancel_order(order_id):
+    order = Order.query.filter_by(id=order_id, user_id=current_user.id).first_or_404()
+    try:
+        # Remboursement du stock des livres
+        for item in order.order_items:
+            book = item.book
+            if book:
+                book.increase_stock(item.quantity)
+            else:
+                flash(f'Le livre associé à l\'article {item.id} n\'existe pas.', 'warning')
+        db.session.delete(order)
+        db.session.commit()
+        flash('Votre commande a été annulée avec succès.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        error_type = type(e).__name__
+        flash(f'Une erreur est survenue lors de l\'annulation de la commande ({error_type}) : {str(e)}', 'danger')
+    return redirect(url_for('main.my_orders'))
