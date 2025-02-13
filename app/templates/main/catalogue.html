@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Catalogue - Le Monde des Livres{% endblock %}
+
+{% block content %}
+<h2>Catalogue des livres</h2>
+<ul>
+    {% for book in books %}
+    <li>
+        <a href="{{ url_for('main.book_details', book_id=book.id) }}">{{ book.title }}</a> par {{ book.author }}
+        - {{ book.price }} €
+        <a href="{{ url_for('main.add_to_cart', book_id=book.id) }}">Ajouter au panier</a>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

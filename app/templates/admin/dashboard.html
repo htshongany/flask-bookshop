@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}Tableau de bord - Administration{% endblock %}
+
+{% block content %}
+<h2>Tableau de bord Administrateur</h2>
+<ul>
+    <li><a href="{{ url_for('admin.manage_books') }}">Gérer les livres</a></li>
+    <!-- Vous pouvez ajouter d'autres liens pour gérer les utilisateurs, les commandes, etc. -->
+</ul>
+{% endblock %}

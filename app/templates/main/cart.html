@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Votre panier - Le Monde des Livres{% endblock %}
+
+{% block content %}
+<h2>Votre panier</h2>
+{% if books %}
+<table border="1">
+    <tr>
+        <th>Livre</th>
+        <th>Quantité</th>
+        <th>Sous-total</th>
+        <th>Actions</th>
+    </tr>
+    {% for item in books %}
+    <tr>
+        <td>{{ item.book.title }}</td>
+        <td>
+            <form action="{{ url_for('main.update_cart', book_id=item.book.id) }}" method="POST">
+                <input type="number" name="quantity" value="{{ item.quantity }}" min="0">
+                <button type="submit">Mettre à jour</button>
+            </form>
+        </td>
+        <td>{{ item.subtotal }} €</td>
+        <td>
+            <form action="{{ url_for('main.update_cart', book_id=item.book.id) }}" method="POST">
+                <input type="hidden" name="quantity" value="0">
+                <button type="submit">Retirer</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+    <tr>
+        <td colspan="2"><strong>Total :</strong></td>
+        <td colspan="2">{{ total }} €</td>
+    </tr>
+</table>
+<a href="{{ url_for('main.checkout') }}">Passer la commande</a><br>
+<a href="{{ url_for('main.clear_cart') }}">Vider le panier</a>
+{% else %}
+<p>Votre panier est vide.</p>
+{% endif %}
+<a href="{{ url_for('main.catalogue') }}">Continuer vos achats</a>
+{% endblock %}

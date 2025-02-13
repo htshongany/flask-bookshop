@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Mes commandes - Le Monde des Livres{% endblock %}
+
+{% block content %}
+<h2>Mes commandes</h2>
+{% if orders %}
+    <ul>
+    {% for order in orders %}
+        <li>
+            <strong>Commande n°{{ order.id }}</strong> - passée le {{ order.date_ordered.strftime('%d/%m/%Y à %H:%M') }}
+            <ul>
+            {% for item in order.order_items %}
+                <li>{{ item.quantity }} x {{ item.book.title }} à {{ item.book.price }} €</li>
+            {% endfor %}
+            </ul>
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>Vous n'avez pas encore passé de commande.</p>
+{% endif %}
+{% endblock %}

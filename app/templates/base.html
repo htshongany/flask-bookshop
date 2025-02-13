@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Le Monde des Livres{% endblock %}</title>
+</head>
+<body>
+    <!-- En-tête du site -->
+    <header>
+        <h1>Le Monde des Livres</h1>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('main.index') }}">Accueil</a></li>
+                <li><a href="{{ url_for('main.catalogue') }}">Catalogue</a></li>
+                {% if current_user.is_authenticated %}
+                    <li><a href="{{ url_for('main.cart') }}">Panier</a></li>
+                    {% if current_user.is_admin %}
+                        <li><a href="{{ url_for('admin.dashboard') }}">Admin</a></li>
+                    {% endif %}
+                    <li><a href="{{ url_for('main.my_orders') }}">Mes commandes</a></li>
+                    <li><a href="{{ url_for('auth.logout') }}">Déconnexion</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('main.cart') }}">Panier</a></li>
+                    <li><a href="{{ url_for('auth.login') }}">Connexion</a></li>
+                    <li><a href="{{ url_for('auth.register') }}">Inscription</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Contenu principal -->
+    <main>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <ul>
+              {% for category, message in messages %}
+                <li>{{ message }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Pied de page -->
+    <footer>
+        <p>&copy; {{ current_year }} Le Monde des Livres. Tous droits réservés.</p>
+    </footer>
+</body>
+</html>

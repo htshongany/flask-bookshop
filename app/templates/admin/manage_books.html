@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Gérer les livres - Administration{% endblock %}
+
+{% block content %}
+<h2>Gérer les livres</h2>
+<a href="{{ url_for('admin.add_book') }}">Ajouter un nouveau livre</a>
+<table border="1">
+    <tr>
+        <th>Titre</th>
+        <th>Auteur</th>
+        <th>Prix</th>
+        <th>Stock</th>
+        <th>Actions</th>
+    </tr>
+    {% for book in books %}
+    <tr>
+        <td>{{ book.title }}</td>
+        <td>{{ book.author }}</td>
+        <td>{{ book.price }} €</td>
+        <td>{{ book.stock }}</td>
+        <td>
+            <a href="{{ url_for('admin.edit_book', book_id=book.id) }}">Modifier</a>
+            <form action="{{ url_for('admin.delete_book', book_id=book.id) }}" method="POST" style="display:inline;">
+                {{ csrf_token() }}
+                <button type="submit" onclick="return confirm('Voulez-vous vraiment supprimer ce livre ?');">Supprimer</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
