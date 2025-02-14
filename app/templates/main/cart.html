@@ -17,7 +17,6 @@
                         <th class="px-4 py-3 text-left text-sm font-bold text-amber-900 uppercase">LIVRE</th>
                         <th class="px-4 py-3 text-left text-sm font-bold text-amber-900 uppercase">QUANTITÉ</th>
                         <th class="px-4 py-3 text-left text-sm font-bold text-amber-900 uppercase">SOUS-TOTAL</th>
-                        <th class="px-4 py-3 text-left text-sm font-bold text-amber-900 uppercase">ACTIONS</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-amber-200">
@@ -26,41 +25,22 @@
                         <td class="px-4 py-3 text-sm text-amber-900">
                             {{ item.book.title|upper }}
                         </td>
-                        <td class="px-4 py-3">
-                            <form action="{{ url_for('main.update_cart', book_id=item.book.id) }}" method="POST" class="flex items-center gap-2">
-                                <input type="number" name="quantity" value="{{ item.quantity }}" min="0" max="10"
-                                       class="w-20 px-2 py-1 border-2 border-amber-300 bg-amber-50 focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
-                                <button type="submit" 
-                                        class="bg-amber-700 hover:bg-amber-800 text-white px-3 py-1 text-sm 
-                                               border-2 border-amber-900 shadow-[2px_2px_0_#78350f] hover:shadow-[3px_3px_0_#78350f] 
-                                               transition-all uppercase">
-                                    Mettre à jour
-                                </button>
-                            </form>
+                        <td class="px-4 py-3 text-sm font-bold text-amber-900">
+                            {{ item.quantity }}
                         </td>
                         <td class="px-4 py-3 text-sm font-bold text-amber-900">
                             {{ item.subtotal }} €
-                        </td>
-                        <td class="px-4 py-3">
-                            <form action="{{ url_for('main.update_cart', book_id=item.book.id) }}" method="POST">
-                                <input type="hidden" name="quantity" value="0">
-                                <button type="submit" 
-                                        class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 text-sm 
-                                               border-2 border-red-900 shadow-[2px_2px_0_#7f1d1d] hover:shadow-[3px_3px_0_#7f1d1d] 
-                                               transition-all uppercase">
-                                    Retirer
-                                </button>
-                            </form>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
                 <tfoot class="bg-amber-50">
                     <tr>
-                        <td colspan="2" class="px-4 py-3 text-right text-sm font-bold text-amber-900 uppercase">
-                            TOTAL :
+                        <td class="px-4 py-3 text-left text-sm font-bold text-amber-900 uppercase">
+                            TOTAL GÉNÉRAL :
                         </td>
-                        <td colspan="2" class="px-4 py-3 text-sm font-bold text-amber-900">
+                        <td class="px-4 py-3"></td> <!-- Cellule vide pour la colonne Quantité -->
+                        <td class="px-4 py-3 text-sm font-bold text-amber-900">
                             {{ total }} €
                         </td>
                     </tr>
@@ -93,15 +73,6 @@
             </svg>
         </div>
         {% endif %}
-
-        <div class="mt-8 text-center">
-            <a href="{{ url_for('main.catalogue') }}" 
-               class="bg-amber-700 hover:bg-amber-800 text-white px-6 py-3 
-                      border-2 border-amber-900 shadow-[3px_3px_0_#78350f] hover:shadow-[4px_4px_0_#78350f] 
-                      transition-all uppercase font-bold inline-block">
-                CONTINUER VOS ACHATS
-            </a>
-        </div>
     </div>
 </div>
 {% endblock %}
