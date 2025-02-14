@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}AJOUTER UN UTILISATEUR - ADMINISTRATION{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <div class="bg-white border-2 border-amber-800 shadow-[4px_4px_0_#78350f] p-6 sm:p-8">
+        <h2 class="text-2xl sm:text-3xl font-bold text-amber-900 mb-6 underline decoration-amber-500 uppercase">
+            AJOUTER UN UTILISATEUR
+        </h2>
+        
+        <form method="POST" action="{{ url_for('admin.add_user') }}" class="space-y-6">
+            {{ form.hidden_tag() }}
+
+            <!-- Nom d'utilisateur -->
+            <div>
+                <label class="block text-sm sm:text-base font-bold text-amber-900 uppercase mb-2">
+                    {{ form.username.label }}
+                </label>
+                {{ form.username(class="w-full px-4 py-3 border-2 border-amber-400 bg-amber-50 focus:ring-2 focus:ring-amber-600 focus:border-amber-600") }}
+                {% for error in form.username.errors %}
+                    <p class="mt-2 text-red-600 text-sm">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <!-- Email -->
+            <div>
+                <label class="block text-sm sm:text-base font-bold text-amber-900 uppercase mb-2">
+                    {{ form.email.label }}
+                </label>
+                {{ form.email(class="w-full px-4 py-3 border-2 border-amber-400 bg-amber-50 focus:ring-2 focus:ring-amber-600 focus:border-amber-600") }}
+                {% for error in form.email.errors %}
+                    <p class="mt-2 text-red-600 text-sm">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <!-- Mot de passe -->
+            <div>
+                <label class="block text-sm sm:text-base font-bold text-amber-900 uppercase mb-2">
+                    {{ form.password.label }}
+                </label>
+                {{ form.password(class="w-full px-4 py-3 border-2 border-amber-400 bg-amber-50 focus:ring-2 focus:ring-amber-600 focus:border-amber-600") }}
+                {% for error in form.password.errors %}
+                    <p class="mt-2 text-red-600 text-sm">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <!-- Confirmation du mot de passe -->
+            <div>
+                <label class="block text-sm sm:text-base font-bold text-amber-900 uppercase mb-2">
+                    {{ form.confirm_password.label }}
+                </label>
+                {{ form.confirm_password(class="w-full px-4 py-3 border-2 border-amber-400 bg-amber-50 focus:ring-2 focus:ring-amber-600 focus:border-amber-600") }}
+                {% for error in form.confirm_password.errors %}
+                    <p class="mt-2 text-red-600 text-sm">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <!-- Est administrateur -->
+            <div class="flex items-center">
+                {{ form.is_admin(class="mr-2") }}
+                <label class="text-sm sm:text-base font-bold text-amber-900 uppercase">
+                    {{ form.is_admin.label }}
+                </label>
+                {% for error in form.is_admin.errors %}
+                    <p class="mt-2 text-red-600 text-sm">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <!-- Bouton d'ajout -->
+            <button type="submit" class="w-full mt-6 px-6 py-3 bg-amber-700 hover:bg-amber-800 text-white font-bold border-2 border-amber-900 shadow-[3px_3px_0_#78350f] hover:shadow-[4px_4px_0_#78350f] transition-all uppercase">
+                AJOUTER L'UTILISATEUR
+            </button>
+        </form>
+
+        <div class="mt-8 text-center space-y-3">
+            <p class="text-sm sm:text-base text-amber-700">
+                <a href="{{ url_for('admin.manage_users') }}" class="font-bold text-amber-900 hover:text-amber-700 underline decoration-dotted">
+                    ← RETOUR À LA GESTION DES UTILISATEURS
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
