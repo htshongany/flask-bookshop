@@ -20,7 +20,7 @@ def catalogue():
     if query:
         books = Book.query.filter((Book.title.ilike(f'%{query}%')) | (Book.author.ilike(f'%{query}%'))).paginate(page=page, per_page=3)
     else:
-        books = Book.query.paginate(page=page, per_page=6)
+        books = Book.query.paginate(page=page, per_page=3)
     
     return render_template('main/catalogue.html', books=books, query=query)
 
