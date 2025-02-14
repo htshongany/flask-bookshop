@@ -23,8 +23,8 @@
                 </div>
             </a>
 
-            <!-- Gérer les utilisateurs (exemple) -->
-            <a href="#" 
+            <!-- Gérer les utilisateurs -->
+            <a href="{{ url_for('admin.manage_users') }}" 
                class="bg-amber-50 hover:bg-amber-100 border-2 border-amber-400 p-6 rounded-lg 
                       shadow-[2px_2px_0_#78350f] hover:shadow-[3px_3px_0_#78350f] transition-all">
                 <div class="text-center">
@@ -36,8 +36,8 @@
                 </div>
             </a>
 
-            <!-- Gérer les commandes (exemple) -->
-            <a href="#" 
+            <!-- Gérer les commandes -->
+            <a href="{{ url_for('admin.manage_orders') }}" 
                class="bg-amber-50 hover:bg-amber-100 border-2 border-amber-400 p-6 rounded-lg 
                       shadow-[2px_2px_0_#78350f] hover:shadow-[3px_3px_0_#78350f] transition-all">
                 <div class="text-center">

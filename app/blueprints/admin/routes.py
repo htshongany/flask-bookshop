@@ -4,6 +4,8 @@ from app.models.book import Book
 from app.models.user import User
 from app.models.order import Order
 from app.forms.book_form import BookForm
+from app.forms.user_form import UserForm
+from app.forms.order_form import OrderForm
 from app.extensions import db
 from flask_login import login_required, current_user
 from functools import wraps
@@ -96,11 +98,38 @@ def manage_users():
     
     return render_template('admin/user/manage_users.html', users=users, query=query)
 
-@admin_bp.route('/users/view/<int:user_id>')
+@admin_bp.route('/users/add', methods=['GET', 'POST'])
 @admin_required
-def view_user(user_id):
+def add_user():
+    form = UserForm()
+    if form.validate_on_submit():
+        user = User(
+            username=form.username.data,
+            email=form.email.data,
+            is_admin=form.is_admin.data
+        )
+        user.set_password(form.password.data)
+        db.session.add(user)
+        db.session.commit()
+        flash('L\'utilisateur a été ajouté avec succès.', 'success')
+        return redirect(url_for('admin.manage_users'))
+    return render_template('admin/user/add_user.html', form=form)
+
+@admin_bp.route('/users/edit/<int:user_id>', methods=['GET', 'POST'])
+@admin_required
+def edit_user(user_id):
     user = User.query.get_or_404(user_id)
-    return render_template('admin/user/view_user.html', user=user)
+    form = UserForm(obj=user)
+    if form.validate_on_submit():
+        user.username = form.username.data
+        user.email = form.email.data
+        user.is_admin = form.is_admin.data
+        if form.password.data:
+            user.set_password(form.password.data)
+        db.session.commit()
+        flash('L\'utilisateur a été mis à jour avec succès.', 'success')
+        return redirect(url_for('admin.manage_users'))
+    return render_template('admin/user/edit_user.html', form=form, user=user)
 
 @admin_bp.route('/users/delete/<int:user_id>', methods=['POST'])
 @admin_required
@@ -117,26 +146,70 @@ def delete_user(user_id):
 @admin_required
 def manage_orders():
     query = request.args.get('query', '')
+    validated = request.args.get('validated')
+    not_validated = request.args.get('not_validated')
     page = request.args.get('page', 1, type=int)
 
+    filters = []
+    if validated:
+        filters.append(Order.status == 'Validée')
+    if not_validated:
+        filters.append(Order.status != 'Validée')
+
     if query:
-        orders = Order.query.filter(Order.id.ilike(f'%{query}%')).paginate(page=page, per_page=3)
-    else:
-        orders = Order.query.paginate(page=page, per_page=3)
+        filters.append(Order.user.has(User.username.ilike(f'%{query}%')) | Order.order_items.any(Book.title.ilike(f'%{query}%')) | Order.order_items.any(Book.author.ilike(f'%{query}%')))
+
+    orders = Order.query.filter(*filters).order_by(Order.status.desc()).paginate(page=page, per_page=3)
     
     return render_template('admin/order/manage_orders.html', orders=orders, query=query)
 
-@admin_bp.route('/orders/view/<int:order_id>')
+@admin_bp.route('/orders/add', methods=['GET', 'POST'])
 @admin_required
-def view_order(order_id):
+def add_order():
+    form = OrderForm()
+    if form.validate_on_submit():
+        order = Order(
+            user_id=form.user_id.data,
+            status=form.status.data
+        )
+        db.session.add(order)
+        db.session.commit()
+        flash('La commande a été ajoutée avec succès.', 'success')
+        return redirect(url_for('admin.manage_orders'))
+    return render_template('admin/order/add_order.html', form=form)
+
+@admin_bp.route('/orders/edit/<int:order_id>', methods=['GET', 'POST'])
+@admin_required
+def edit_order(order_id):
     order = Order.query.get_or_404(order_id)
-    return render_template('admin/order/view_order.html', order=order)
+    form = OrderForm(obj=order)
+    if form.validate_on_submit():
+        order.user_id = form.user_id.data
+        order.status = form.status.data
+        db.session.commit()
+        flash('La commande a été mise à jour avec succès.', 'success')
+        return redirect(url_for('admin.manage_orders'))
+    return render_template('admin/order/edit_order.html', form=form, order=order)
+
+@admin_bp.route('/orders/validate/<int:order_id>', methods=['POST'])
+@admin_required
+def validate_order(order_id):
+    order = Order.query.get_or_404(order_id)
+    order.status = 'Validée'
+    db.session.commit()
+    flash('La commande a été validée avec succès.', 'success')
+    return redirect(url_for('admin.manage_orders'))
 
 @admin_bp.route('/orders/delete/<int:order_id>', methods=['POST'])
 @admin_required
 def delete_order(order_id):
     order = Order.query.get_or_404(order_id)
-    db.session.delete(order)
-    db.session.commit()
-    flash('La commande a été supprimée avec succès.', 'success')
+    if order.status != 'Validée':
+        for item in order.order_items:
+            item.book.increase_stock(item.quantity)
+        db.session.delete(order)
+        db.session.commit()
+        flash('La commande a été annulée et les livres ont été retournés au stock.', 'success')
+    else:
+        flash('L\'annulation n\'est pas possible car la commande a déjà été validée.', 'danger')
     return redirect(url_for('admin.manage_orders'))
