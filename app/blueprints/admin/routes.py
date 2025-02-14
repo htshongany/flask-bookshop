@@ -3,6 +3,7 @@ from . import admin_bp
 from app.models.book import Book
 from app.models.user import User
 from app.models.order import Order
+from app.models.order_item import OrderItem
 from app.forms.book_form import BookForm
 from app.forms.user_form import UserForm
 from app.forms.order_form import OrderForm
@@ -150,18 +151,45 @@ def manage_orders():
     not_validated = request.args.get('not_validated')
     page = request.args.get('page', 1, type=int)
 
+    # Construction des filtres de statut
     filters = []
     if validated:
         filters.append(Order.status == 'Validée')
     if not_validated:
         filters.append(Order.status != 'Validée')
 
-    if query:
-        filters.append(Order.user.has(User.username.ilike(f'%{query}%')) | Order.order_items.any(Book.title.ilike(f'%{query}%')) | Order.order_items.any(Book.author.ilike(f'%{query}%')))
+    # Construction de la requête de base
+    orders_query = Order.query.filter(*filters)
 
-    orders = Order.query.filter(*filters).order_by(Order.status.desc()).paginate(page=page, per_page=3)
-    
-    return render_template('admin/order/manage_orders.html', orders=orders, query=query)
+    # Application des filtres de recherche si une requête existe
+    if query:
+        query = f'%{query}%'
+        orders_query = orders_query \
+            .join(User, User.id == Order.user_id) \
+            .outerjoin(OrderItem, OrderItem.order_id == Order.id) \
+            .outerjoin(Book, Book.id == OrderItem.book_id) \
+            .filter(
+                (User.username.ilike(query)) |
+                (Book.title.ilike(query)) |
+                (Book.author.ilike(query))
+            ) \
+            .distinct()
+
+    # Pagination et tri
+    orders = orders_query.order_by(Order.status.asc()).paginate(page=page, per_page=3)
+
+    # Calcul des totaux
+    total_validated_price = db.session.query(db.func.sum(Book.price * OrderItem.quantity)).select_from(OrderItem).join(Order).filter(Order.status == 'Validée').scalar() or 0
+    total_not_validated_price = db.session.query(db.func.sum(Book.price * OrderItem.quantity)).select_from(OrderItem).join(Order).filter(Order.status != 'Validée').scalar() or 0
+
+    return render_template(
+        'admin/order/manage_orders.html',
+        orders=orders,
+        query=query,
+        total_validated_price=total_validated_price,
+        total_not_validated_price=total_not_validated_price
+    )
+
 
 @admin_bp.route('/orders/add', methods=['GET', 'POST'])
 @admin_required
@@ -213,3 +241,9 @@ def delete_order(order_id):
     else:
         flash('L\'annulation n\'est pas possible car la commande a déjà été validée.', 'danger')
     return redirect(url_for('admin.manage_orders'))
+
+@admin_bp.route('/orders/details/<int:order_id>')
+@admin_required
+def order_details(order_id):
+    order = Order.query.get_or_404(order_id)
+    return render_template('admin/order/order_details.html', order=order)
