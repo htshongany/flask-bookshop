@@ -17,5 +17,12 @@ class Order(db.Model):
     order_items = db.relationship('OrderItem', back_populates='order', lazy=True, cascade='all, delete-orphan')
 
     # Méthodes
+    def total_price(self):
+        return sum(item.book.price * item.quantity for item in self.order_items)
+    
+    @staticmethod
+    def total_price_by_status(status):
+        return sum(order.total_price() for order in Order.query.filter_by(status=status).all())
+    
     def __repr__(self):
         return f'<Order {self.id}>'
