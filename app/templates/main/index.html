@@ -61,15 +61,18 @@
         </h2>
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {% for book in recent_books %}
-            <div class="border-2 border-amber-300 p-4">
+            <a href="{{ url_for('main.book_details', book_id=book.id) }}" class="border-2 border-amber-300 p-4 hover:shadow-[3px_3px_0_#78350f] transition-all">
                 <div class="h-48 bg-amber-100 mb-4 flex items-center justify-center">
-                    <span class="text-amber-700">Image du livre</span>
+                    {% if book.image %}
+                        <img src="{{ url_for('static', filename='images/books/' ~ book.image) }}" alt="Image de {{ book.title }}" class="h-full object-cover">
+                    {% else %}
+                        <span class="text-amber-700">Image du livre</span>
+                    {% endif %}
                 </div>
                 <h4 class="font-bold text-amber-900">{{ book.title }}</h4>
                 <p class="text-amber-700 text-sm">{{ book.author }}</p>
                 <p class="text-amber-900 font-bold mt-2">{{ book.price }} €</p>
-                <a href="{{ url_for('main.book_details', book_id=book.id) }}" class="text-amber-700 hover:text-amber-900 underline mt-2 inline-block">Voir les détails</a>
-            </div>
+            </a>
             {% else %}
             <p class="text-amber-700">Aucun livre récent à afficher.</p>
             {% endfor %}

@@ -9,7 +9,7 @@
             MODIFIER LE LIVRE : {{ book.title|upper }}
         </h2>
         
-        <form method="POST" action="{{ url_for('admin.edit_book', book_id=book.id) }}" class="space-y-6">
+        <form method="POST" action="{{ url_for('admin.edit_book', book_id=book.id) }}" enctype="multipart/form-data" class="space-y-6">
             {{ form.hidden_tag() }}
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -71,6 +71,17 @@
                 {{ form.description(class="w-full px-4 py-3 h-32 border-2 border-amber-400 bg-amber-50 focus:ring-2 focus:ring-amber-600 focus:border-amber-600") }}
                 {% for error in form.description.errors %}
                     <p class="mt-2 text-red-600 text-sm">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <!-- Image -->
+            <div>
+                <label class="block text-sm sm:text-base font-bold text-amber-900 uppercase mb-2">
+                    {{ form.image.label }}
+                </label>
+                {{ form.image(class="w-full px-4 py-3 border-2 border-amber-400 bg-amber-50 focus:ring-2 focus:ring-amber-600 focus:border-amber-600") }}
+                {% for error in form.image.errors %}
+                <p class="mt-2 text-red-600 text-sm">{{ error }}</p>
                 {% endfor %}
             </div>
 
