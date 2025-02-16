@@ -5,11 +5,12 @@ from app.models.order import Order
 from app.models.order_item import OrderItem
 from app.extensions import db
 from flask_login import login_required, current_user
+from werkzeug.exceptions import HTTPException
 
 @main_bp.route('/')
 def index():
-    # Récupérer les 3 livres les plus récents
-    recent_books = Book.query.order_by(Book.id.desc()).limit(3).all()
+    # Récupérer les 3 livres les plus récemment mis à jour
+    recent_books = Book.query.order_by(Book.updated_at.desc()).limit(3).all()
     return render_template('main/index.html', recent_books=recent_books)
 
 @main_bp.route('/catalogue')
@@ -21,9 +22,6 @@ def catalogue():
         books = Book.query.filter((Book.title.ilike(f'%{query}%')) | (Book.author.ilike(f'%{query}%'))).paginate(page=page, per_page=3)
     else:
         books = Book.query.paginate(page=page, per_page=3)
-    
-    return render_template('main/catalogue.html', books=books, query=query)
-
     
     return render_template('main/catalogue.html', books=books, query=query)
 
@@ -49,6 +47,7 @@ def add_to_cart(book_id):
 
 # Route pour afficher le panier
 @main_bp.route('/cart')
+@login_required
 def cart():
     cart = session.get('cart', {})
     items = []
@@ -89,6 +88,7 @@ def update_cart(book_id):
 
 # Route pour vider le panier
 @main_bp.route('/clear_cart')
+@login_required
 def clear_cart():
     session.pop('cart', None)
     flash('Votre panier a été vidé.', 'info')
@@ -133,10 +133,11 @@ def checkout():
 @main_bp.route('/my_orders')
 @login_required
 def my_orders():
-    orders = Order.query.filter_by(user_id=current_user.id).order_by(Order.date_ordered.desc()).all()
-    orders_with_totals = [(order, sum(item.quantity * item.book.price for item in order.order_items)) for order in orders]
+    page = request.args.get('page', 1, type=int)
+    orders_paginate = Order.query.filter_by(user_id=current_user.id).order_by(Order.date_ordered.desc()).paginate(page=page, per_page=3)
+    orders_with_totals = [(order, sum(item.quantity * item.book.price for item in order.order_items)) for order in orders_paginate.items]
 
-    return render_template('main/my_orders.html', orders_with_totals=orders_with_totals)
+    return render_template('main/my_orders.html', orders_with_totals=orders_with_totals, orders_paginate=orders_paginate)
 
 # Route pour annuler une commande
 @main_bp.route('/cancel_order/<int:order_id>', methods=['POST'])
@@ -159,3 +160,22 @@ def cancel_order(order_id):
         error_type = type(e).__name__
         flash(f'Une erreur est survenue lors de l\'annulation de la commande ({error_type}) : {str(e)}', 'danger')
     return redirect(url_for('main.my_orders'))
+
+# Gestion des erreurs
+@main_bp.errorhandler(404)
+def not_found_error(error):
+    return render_template('errors/404.html'), 404
+
+@main_bp.errorhandler(403)
+def forbidden_error(error):
+    return render_template('errors/403.html'), 403
+
+@main_bp.errorhandler(401)
+def forbidden_error(error):
+    return render_template('errors/401.html'), 401
+
+# @main_bp.errorhandler(Exception)
+# def handle_exception(e):
+#     if isinstance(e, HTTPException):
+#         return e
+#     return "Une erreur est survenue", 500

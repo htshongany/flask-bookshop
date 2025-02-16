@@ -1,7 +1,7 @@
 # app/models/book.py
-
 from app.extensions import db
 from sqlalchemy.orm import validates
+from datetime import datetime
 from PIL import Image
 import os
 
@@ -17,6 +17,8 @@ class Book(db.Model):
     stock = db.Column(db.Integer, default=0)
     available = db.Column(db.Boolean, default=True)
     image = db.Column(db.String(120), nullable=True)  # Nouveau champ pour l'image
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)  # Date de création
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)  # Date de mise à jour
 
     # Relations
     ratings = db.relationship('Rating', back_populates='book', lazy=True, cascade='all, delete-orphan')

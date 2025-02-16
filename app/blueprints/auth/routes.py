@@ -30,10 +30,11 @@ def register():
     if form.validate_on_submit():
         # Vérifier s'il existe déjà des utilisateurs dans la base de données
         is_first_user = User.query.count() == 0
+        role = 'admin' if is_first_user else 'customer'
         user = User(
             username=form.username.data,
             email=form.email.data,
-            is_admin=is_first_user  # Le premier utilisateur inscrit devient administrateur
+            role=role  # Le premier utilisateur devient admin, les autres des clients
         )
         user.set_password(form.password.data)
         db.session.add(user)

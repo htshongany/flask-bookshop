@@ -3,6 +3,7 @@
 from app.extensions import db, login_manager
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime
 
 # Fonction de rappel pour charger l'utilisateur courant
 @login_manager.user_loader
@@ -17,7 +18,9 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(150), nullable=False, unique=True)
     email = db.Column(db.String(150), nullable=False, unique=True)
     password_hash = db.Column(db.String(256), nullable=False)
-    is_admin = db.Column(db.Boolean, default=False)
+    role = db.Column(db.String(50), default='customer')  # Nouveau champ pour le rôle
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)  # Date de création
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)  # Date de mise à jour
 
     # Relations
     orders = db.relationship('Order', back_populates='user', lazy=True, cascade='all, delete-orphan')
