@@ -74,7 +74,7 @@
                         <a href="{{ url_for('main.cart') }}" class="block px-3 py-2 text-sm text-amber-900 hover:bg-amber-200">
                             PANIER
                         </a>
-                        {% if current_user.is_admin %}
+                        {% if current_user.role == 'admin' or current_user.role == 'staff' %}
                             <a href="{{ url_for('admin.dashboard') }}" class="block px-3 py-2 text-sm text-amber-900 hover:bg-amber-200">
                                 ADMIN
                             </a>
@@ -143,6 +143,14 @@
             setTimeout(function() {
                 message.remove();
             }, 2000);
+        });
+
+        // Script pour le menu mobile
+        const menuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        menuButton.addEventListener('click', function() {
+            mobileMenu.classList.toggle('hidden');
         });
     });
     </script>
