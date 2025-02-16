@@ -17,29 +17,27 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {% for book in books.items %}
-            <a href="{{ url_for('main.book_details', book_id=book.id) }}" class="border-2 border-amber-300 p-4 hover:shadow-[3px_3px_0_#78350f] transition-all">
-                <!-- Image du livre -->
-                <div class="h-48 bg-amber-100 mb-4 flex items-center justify-center">
-                    {% if book.image %}
-                        <img src="{{ url_for('static', filename='images/books/' ~ book.image) }}" alt="Image de {{ book.title }}" class="h-full object-cover">
-                    {% else %}
-                        <span class="text-amber-700 text-sm">IMAGE DU LIVRE</span>
-                    {% endif %}
-                </div>
+            <div class="border-2 border-amber-300 p-4 hover:shadow-[3px_3px_0_#78350f] transition-all">
+                <a href="{{ url_for('main.book_details', book_id=book.id) }}">
+                    <!-- Image du livre -->
+                    <div class="h-48 bg-amber-100 mb-4 flex items-center justify-center">
+                        {% if book.image %}
+                            <img src="{{ url_for('static', filename='images/books/' ~ book.image) }}" alt="Image de {{ book.title }}" class="h-full object-cover">
+                        {% else %}
+                            <span class="text-amber-700 text-sm">IMAGE DU LIVRE</span>
+                        {% endif %}
+                    </div>
+                    
+                    <h3 class="text-lg font-bold text-amber-900">
+                        {{ book.title|capitalize }}
+                    </h3>
+                    
+                    <p class="text-sm text-amber-700 mb-2">Par : {{ book.author }}</p>
+                    <p class="text-lg font-bold text-amber-900 mb-4">{{ book.price }} €</p>
+                </a>
                 
-                <h3 class="text-lg font-bold text-amber-900">
-                    {{ book.title|upper }}
-                </h3>
-                
-                <p class="text-sm text-amber-700 mb-2">Par {{ book.author }}</p>
-                <p class="text-lg font-bold text-amber-900 mb-4">{{ book.price }} €</p>
-                
-                <div class="inline-block bg-amber-700 hover:bg-amber-800 text-white px-4 py-2 text-sm 
-                        border-2 border-amber-900 shadow-[2px_2px_0_#78350f] hover:shadow-[3px_3px_0_#78350f] 
-                        transition-all uppercase">
-                    Ajouter au panier
-                </div>
-            </a>
+
+            </div>
             {% else %}
             <p class="text-amber-700 col-span-full text-center py-8">
                 Aucun livre disponible pour le moment
