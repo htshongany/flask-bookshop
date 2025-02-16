@@ -324,16 +324,21 @@ def edit_order(order_id):
 
 @admin_bp.route('/orders/validate/<int:order_id>', methods=['POST'])
 @admin_or_staff_required
-def validate_order(order_id):
+def toggle_validation_order(order_id):
     order = Order.query.get_or_404(order_id)
-    order.status = 'Validée'
+    if order.status == 'Validée':
+        order.status = 'Non Validée'
+        flash('La validation de la commande a été annulée.', 'success')
+    else:
+        order.status = 'Validée'
+        flash('La commande a été validée avec succès.', 'success')
     try:
         db.session.commit()
-        flash('La commande a été validée avec succès.', 'success')
     except Exception as e:
         db.session.rollback()
-        flash("Une erreur est survenue lors de la validation de la commande.", 'danger')
+        flash("Une erreur est survenue lors du changement de statut de la commande.", 'danger')
     return redirect(url_for('admin.manage_orders'))
+
 
 @admin_bp.route('/orders/delete/<int:order_id>', methods=['POST'])
 @admin_or_staff_required

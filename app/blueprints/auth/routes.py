@@ -39,8 +39,9 @@ def register():
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        flash('Votre compte a été créé avec succès ! Vous pouvez maintenant vous connecter.', 'success')
-        return redirect(url_for('auth.login'))
+        login_user(user) 
+        flash('Votre compte a été créé avec succès et vous êtes maintenant connecté !', 'success')
+        return redirect(url_for('main.index'))
     return render_template('auth/register.html', form=form)
 
 @auth_bp.route('/logout')
