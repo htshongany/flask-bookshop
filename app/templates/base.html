@@ -35,7 +35,7 @@
                         <a href="{{ url_for('main.my_orders') }}" class="text-sm sm:text-base text-amber-900 hover:text-amber-700 border-b-2 border-transparent hover:border-amber-700 transition-all">
                             COMMANDES
                         </a>
-                        {% if current_user.is_admin %}
+                        {% if current_user.role == 'admin' or current_user.role == 'staff' %}
                             <a href="{{ url_for('admin.dashboard') }}" class="text-sm sm:text-base bg-amber-700 text-white px-4 py-2 rounded-sm border-2 border-amber-900 shadow-[2px_2px_0_#78350f] hover:shadow-[3px_3px_0_#78350f] transition-all">
                                 ADMIN
                             </a>

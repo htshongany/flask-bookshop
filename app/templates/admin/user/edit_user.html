@@ -56,13 +56,17 @@
                 {% endfor %}
             </div>
 
-            <!-- Est administrateur -->
-            <div class="flex items-center">
-                {{ form.is_admin(class="mr-2") }}
-                <label class="text-sm sm:text-base font-bold text-amber-900 uppercase">
-                    {{ form.is_admin.label }}
+            <!-- Rôle -->
+            <div>
+                <label class="block text-sm sm:text-base font-bold text-amber-900 uppercase mb-2">
+                    {{ form.role.label }}
                 </label>
-                {% for error in form.is_admin.errors %}
+                {% if current_user.role == 'admin' %}
+                    {{ form.role(class="w-full px-4 py-3 border-2 border-amber-400 bg-amber-50 focus:ring-2 focus:ring-amber-600 focus:border-amber-600") }}
+                {% else %}
+                    {{ form.role(class="w-full px-4 py-3 border-2 border-amber-400 bg-amber-50 focus:ring-2 focus:ring-amber-600 focus:border-amber-600", choices=[('customer', 'Customer'), ('staff', 'Staff')]) }}
+                {% endif %}
+                {% for error in form.role.errors %}
                     <p class="mt-2 text-red-600 text-sm">{{ error }}</p>
                 {% endfor %}
             </div>
