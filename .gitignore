@@ -270,3 +270,4 @@ __pycache__/
 instance/* 
 env/*
 .env
+app/static/images/books/*
