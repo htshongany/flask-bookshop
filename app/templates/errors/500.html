@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}Erreur du serveur{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
+    <h1 class="text-3xl font-bold text-amber-900">500 - Erreur du serveur</h1>
+    <p class="text-lg text-amber-700 mt-4">Une erreur interne du serveur s'est produite. Veuillez réessayer plus tard.</p>
+    <a href="{{ url_for('main.index') }}" class="mt-6 inline-block bg-amber-700 hover:bg-amber-800 text-white px-6 py-3 border-2 border-amber-900 shadow-[2px_2px_0_#78350f] hover:shadow-[3px_3px_0_#78350f] transition-all uppercase">Retour à l'accueil</a>
+</div>
+{% endblock %}
