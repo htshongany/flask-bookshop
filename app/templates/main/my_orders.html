@@ -1,67 +1,69 @@
-{% extends 'base.html' %} 
+{% extends 'base.html' %}
 
-{% block title %}MES COMMANDES - LE MONDE DES LIVRES{% endblock %} 
+{% block title %}MES COMMANDES - LE MONDE DES LIVRES{% endblock %}
 
-{% block content %} 
-<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8"> 
-  <div class="bg-white border-2 border-amber-800 shadow-[4px_4px_0_#78350f] p-6 sm:p-8"> 
-    <h2 class="text-2xl sm:text-3xl font-bold text-amber-900 mb-6 uppercase underline decoration-amber-500">MES COMMANDES</h2> 
-    
-    {# Vérifier s'il existe des commandes non validées #}
-    {% set ns = namespace(has_non_validated=false) %}
-    {% for order, total in orders_with_totals %}
-      {% if order.status != 'Validée' %}
-        {% set ns.has_non_validated = true %}
-      {% endif %}
-    {% endfor %}
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="bg-white border-2 border-amber-800 shadow-[4px_4px_0_#78350f] p-6 sm:p-8">
+        <h2 class="text-2xl sm:text-3xl font-bold text-amber-900 mb-6 uppercase underline decoration-amber-500">
+            MES COMMANDES
+        </h2>
+        
+        {# Vérifier s'il existe des commandes non validées #}
+        {% set ns = namespace(has_non_validated=false) %}
+        {% for order, total in orders_with_totals %}
+            {% if order.status != 'Validée' %}
+                {% set ns.has_non_validated = true %}
+            {% endif %}
+        {% endfor %}
 
-    {% if ns.has_non_validated %}
-      <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-amber-200">
-          <thead class="bg-amber-50">
-            <tr>
-              <th class="px-4 py-3 text-left text-sm font-bold text-amber-900 uppercase">N° COMMANDE</th>
-              <th class="px-4 py-3 text-left text-sm font-bold text-amber-900 uppercase">DATE</th>
-              <th class="px-4 py-3 text-left text-sm font-bold text-amber-900 uppercase">ARTICLES</th>
-              <th class="px-4 py-3 text-left text-sm font-bold text-amber-900 uppercase">TOTAL</th>
-              <th class="px-4 py-3 text-left text-sm font-bold text-amber-900 uppercase">ACTIONS</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-amber-200">
-            {% for order, total in orders_with_totals %}
-              {% if order.status != 'Validée' %}
-                <tr class="hover:bg-amber-50 transition-colors">
-                  <td class="px-4 py-3 text-sm text-amber-900 font-medium">#{{ order.id}}</td>
-                  <td class="px-4 py-3 text-sm text-amber-700">{{ order.date_ordered.strftime('%d/%m/%Y à %H:%M')}}</td>
-                  <td class="px-4 py-3 text-sm text-amber-700">
-                    <ul class="list-disc list-inside space-y-1">
-                      {% for item in order.order_items %}
-                        <li>{{ item.quantity }} x {{ item.book.title|upper }} - {{ item.book.price }} €</li>
-                      {% endfor %}
-                    </ul>
-                  </td>
-                  <td class="px-4 py-3 text-sm font-bold text-amber-900">{{ total }} €</td>
-                  <td class="px-4 py-3">
-                    <form action="{{ url_for('main.cancel_order', order_id=order.id) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir annuler cette commande ?');">
-                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                      <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 text-sm border-2 border-red-900 shadow-[2px_2px_0_#7f1d1d] hover:shadow-[3px_3px_0_#7f1d1d] transition-all uppercase">Annuler</button>
-                    </form>
-                  </td>
-                </tr>
-              {% endif %}
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    {% else %}
-      <div class="text-center py-8">
-        <p class="text-lg text-amber-700 mb-4">Vous n'avez pas encore passé de commande.</p>
-        <svg class="w-16 h-16 mx-auto text-amber-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"/>
-        </svg>
-        <a href="{{ url_for('main.catalogue') }}" class="bg-amber-700 hover:bg-amber-800 text-white px-6 py-3 border-2 border-amber-900 shadow-[3px_3px_0_#78350f] hover:shadow-[4px_4px_0_#78350f] transition-all uppercase font-bold inline-block">COMMENCER VOS ACHATS</a>
-      </div>
-    {% endif %}
-  </div>
+        {% if ns.has_non_validated %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-amber-200">
+                    <thead class="bg-amber-50">
+                        <tr>
+                            <th class="px-2 py-3 text-left text-xs sm:text-sm font-bold text-amber-900 uppercase">ARTICLES</th>
+                            <th class="px-2 py-3 text-left text-xs sm:text-sm font-bold text-amber-900 uppercase">TOTAL</th>
+                            <th class="px-2 py-3 text-left text-xs sm:text-sm font-bold text-amber-900 uppercase">ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-amber-200">
+                        {% for order, total in orders_with_totals %}
+                            {% if order.status != 'Validée' %}
+                                <tr class="hover:bg-amber-50 transition-colors">
+                                    <td class="px-2 py-3 text-xs sm:text-sm text-amber-700">
+                                        <ul class="list-disc list-inside space-y-1">
+                                            {% for item in order.order_items %}
+                                                <li>{{ item.quantity }} x {{ item.book.title|upper }} - {{ item.book.price }} €</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </td>
+                                    <td class="px-2 py-3 text-xs sm:text-sm font-bold text-amber-900">{{ total }} €</td>
+                                    <td class="px-2 py-3">
+                                        <form action="{{ url_for('main.cancel_order', order_id=order.id) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir annuler cette commande ?');">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 text-xs sm:text-sm border-2 border-red-900 shadow-[2px_2px_0_#7f1d1d] hover:shadow-[3px_3px_0_#7f1d1d] transition-all uppercase">
+                                                Annuler
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-8">
+                <p class="text-lg text-amber-700 mb-4">Vous n'avez pas encore passé de commande.</p>
+                <svg class="w-16 h-16 mx-auto text-amber-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"/>
+                </svg>
+                <a href="{{ url_for('main.catalogue') }}" class="bg-amber-700 hover:bg-amber-800 text-white px-6 py-3 border-2 border-amber-900 shadow-[3px_3px_0_#78350f] hover:shadow-[4px_4px_0_#78350f] transition-all uppercase font-bold inline-block">
+                    COMMENCER VOS ACHATS
+                </a>
+            </div>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}

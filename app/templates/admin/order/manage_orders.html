@@ -5,31 +5,31 @@
 {% block content %}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="bg-white border-2 border-amber-800 shadow-[4px_4px_0_#78350f] p-6 sm:p-8">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl sm:text-3xl font-bold text-amber-900 uppercase underline decoration-amber-500">
+        <div class="flex flex-wrap justify-between items-center mb-6">
+            <h2 class="text-2xl sm:text-3xl font-bold text-amber-900 uppercase underline decoration-amber-500 mb-4 sm:mb-0">
                 GÉRER LES COMMANDES
             </h2>
         </div>
 
         <!-- Barre de recherche -->
-        <form method="get" action="{{ url_for('admin.manage_orders') }}" class="mb-6 flex items-center">
-            <input type="text" name="query" value="{{ query }}" placeholder="Rechercher une commande par utilisateur, titre ou auteur" class="border-2 border-amber-300 px-4 py-2 flex-1">
-            <button type="submit" class="bg-amber-700 hover:bg-amber-800 text-white px-4 py-2 text-sm border-2 border-amber-900 shadow-[2px_2px_0_#78350f] hover:shadow-[3px_3px_0_#78350f] transition-all uppercase ml-4">
+        <form method="get" action="{{ url_for('admin.manage_orders') }}" class="mb-6 flex flex-wrap items-center space-y-2 sm:space-y-0 sm:space-x-2">
+            <input type="text" name="query" value="{{ query }}" placeholder="Rechercher une commande par utilisateur" class="border-2 border-amber-300 px-4 py-2 flex-1 w-full sm:w-auto">
+            <button type="submit" class="bg-amber-700 hover:bg-amber-800 text-white px-4 py-2 text-sm border-2 border-amber-900 shadow-[2px_2px_0_#78350f] hover:shadow-[3px_3px_0_#78350f] transition-all uppercase w-full sm:w-auto">
                 Rechercher
             </button>
         </form>
 
         <!-- Filtres des commandes -->
-        <form method="get" action="{{ url_for('admin.manage_orders') }}" class="mb-6 flex items-center">
+        <form method="get" action="{{ url_for('admin.manage_orders') }}" class="mb-6 flex flex-wrap items-center space-y-2 sm:space-y-0 sm:space-x-2">
             <label class="inline-flex items-center text-amber-900">
                 <input type="checkbox" name="validated" value="true" {% if request.args.get('validated') %}checked{% endif %} class="mr-2">
                 Commandes validées
             </label>
-            <label class="inline-flex items-center ml-6 text-amber-900">
+            <label class="inline-flex items-center text-amber-900">
                 <input type="checkbox" name="not_validated" value="true" {% if request.args.get('not_validated') %}checked{% endif %} class="mr-2">
                 Commandes non validées
             </label>
-            <button type="submit" class="ml-4 bg-amber-700 hover:bg-amber-800 text-white px-4 py-2 text-sm border-2 border-amber-900 shadow-[2px_2px_0_#78350f] hover:shadow-[3px_3px_0_#78350f] transition-all uppercase">
+            <button type="submit" class="bg-amber-700 hover:bg-amber-800 text-white px-4 py-2 text-sm border-2 border-amber-900 shadow-[2px_2px_0_#78350f] hover:shadow-[3px_3px_0_#78350f] transition-all uppercase w-full sm:w-auto">
                 Appliquer
             </button>
         </form>
@@ -39,37 +39,33 @@
             <table class="min-w-full divide-y divide-amber-200">
                 <thead class="bg-amber-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-sm font-bold text-amber-900 uppercase">UTILISATEUR</th>
-                        <th class="px-6 py-3 text-left text-sm font-bold text-amber-900 uppercase">LIVRES</th>
-                        <th class="px-6 py-3 text-left text-sm font-bold text-amber-900 uppercase">DATE</th>
-                        <th class="px-6 py-3 text-left text-sm font-bold text-amber-900 uppercase">STATUT</th>
-                        <th class="px-6 py-3 text-left text-sm font-bold text-amber-900 uppercase">PRIX</th>
-                        <th class="px-6 py-3 text-left text-sm font-bold text-amber-900 uppercase">ACTIONS</th>
+                        <th class="px-2 sm:px-6 py-3 text-left text-xs sm:text-sm font-bold text-amber-900 uppercase">UTILISATEUR</th>
+                        <th class="px-2 sm:px-6 py-3 text-left text-xs sm:text-sm font-bold text-amber-900 uppercase">PRIX</th>
+                        <th class="px-2 sm:px-6 py-3 text-left text-xs sm:text-sm font-bold text-amber-900 uppercase">ACTIONS</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-amber-200">
                     {% for order in orders.items %}
                     <tr class="hover:bg-amber-50 transition-colors cursor-pointer"
                         onclick="window.location='{{ url_for('admin.order_details', order_id=order.id) }}';">
-                        <td class="px-6 py-3 text-sm text-amber-700">{{ order.user.username }}</td>
-                        <td class="px-6 py-3 text-sm text-amber-700">{{ order.order_items[0].book.title }}</td>
-                        <td class="px-6 py-3 text-sm text-amber-700">{{ order.date_ordered.strftime('%d/%m/%Y à %H:%M') }}</td>
-                        <td class="px-6 py-3 text-sm {{ 'text-green-700' if order.status == 'Validée' else 'text-red-700' }}">
-                            {{ order.status }}
-                        </td>
-                        <td class="px-6 py-3 text-sm text-amber-700">{{ order.total_price() }} €</td>
-                        <td class="px-6 py-3 text-sm">
+                        <td class="px-2 sm:px-6 py-3 text-xs sm:text-sm text-amber-700">{{ order.user.username }}</td>
+                        <td class="px-2 sm:px-6 py-3 text-xs sm:text-sm text-amber-700">{{ order.total_price() }} €</td>
+                        <td class="px-2 sm:px-6 py-3 text-xs sm:text-sm">
                             <div class="flex items-center gap-2">
-                                <form onclick="event.stopPropagation();" action="{{ url_for('admin.validate_order', order_id=order.id) }}" method="POST" class="inline">
+                                <form onclick="event.stopPropagation();" action="{{ url_for('admin.toggle_validation_order', order_id=order.id) }}" method="POST" class="inline">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 text-sm border-2 border-green-900 shadow-[2px_2px_0_#064e3b] hover:shadow-[3px_3px_0_#064e3b] transition-all uppercase">
-                                        Valider
+                                    <button type="submit" class="{% if order.status == 'Validée' %}bg-red-600 hover:bg-red-700{% else %}bg-green-600 hover:bg-green-700{% endif %} text-white px-3 py-1 text-xs sm:text-sm border-2 {% if order.status == 'Validée' %}border-red-900 shadow-[2px_2px_0_#7f1d1d] hover:shadow-[3px_3px_0_#7f1d1d]{% else %}border-green-900 shadow-[2px_2px_0_#064e3b] hover:shadow-[3px_3px_0_#064e3b]{% endif %} transition-all uppercase">
+                                        {% if order.status == 'Validée' %}
+                                            Invalider
+                                        {% else %}
+                                            Valider
+                                        {% endif %}
                                     </button>
                                 </form>
                                 <span class="text-amber-400">|</span>
                                 <form onclick="event.stopPropagation();" action="{{ url_for('admin.delete_order', order_id=order.id) }}" method="POST" class="inline">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                    <button type="submit" class="bg-red-600 text-white px-3 py-1 text-sm border-2 border-red-900 shadow-[2px_2px_0_#7f1d1d] hover:shadow-[3px_3px_0_#7f1d1d] transition-all uppercase"
+                                    <button type="submit" class="bg-red-600 text-white px-3 py-1 text-xs sm:text-sm border-2 border-red-900 shadow-[2px_2px_0_#7f1d1d] hover:shadow-[3px_3px_0_#7f1d1d] transition-all uppercase"
                                         {% if order.status == 'Validée' %} disabled style="opacity: 0.5; cursor: not-allowed;" {% else %} hover:bg-red-700 {% endif %}
                                         onclick="return confirm('Voulez-vous vraiment annuler cette commande ?');">
                                         Annuler
@@ -79,32 +75,17 @@
                         </td>
                     </tr>
                     {% endfor %}
-                    <tr class="bg-amber-50">
-                        <td colspan="4" class="px-6 py-3 text-left text-sm font-bold text-amber-900 uppercase">
-                            Prix total des commandes validées
-                        </td>
-                        <td colspan="2" class="px-6 py-3 text-left text-sm text-amber-700">
-                            {{ total_validated_price }} €
-                        </td>
-                    </tr>
-                    <tr class="bg-amber-50">
-                        <td colspan="4" class="px-6 py-3 text-left text-sm font-bold text-amber-900 uppercase">
-                            Prix total des commandes non validées
-                        </td>
-                        <td colspan="2" class="px-6 py-3 text-left text-sm text-amber-700">
-                            {{ total_not_validated_price }} €
-                        </td>
-                    </tr>
                 </tbody>
             </table>
         </div>
 
+
         <!-- Pagination -->
         {% if orders.pages > 1 %}
-        <div class="mt-6 flex justify-center">
+        <div class="mt-6 flex justify-center flex-wrap gap-2">
             {% if orders.has_prev %}
                 <a href="{{ url_for('admin.manage_orders', page=orders.prev_num, query=query, validated=request.args.get('validated'), not_validated=request.args.get('not_validated')) }}"
-                   class="mx-2 bg-amber-700 hover:bg-amber-800 text-white px-3 py-1 text-sm border-2 border-amber-900 shadow-[2px_2px_0_#78350f] hover:shadow-[3px_3px_0_#78350f] transition-all uppercase">
+                   class="bg-amber-700 hover:bg-amber-800 text-white px-3 py-1 text-xs sm:text-sm border-2 border-amber-900 shadow-[2px_2px_0_#78350f] hover:shadow-[3px_3px_0_#78350f] transition-all uppercase">
                     &laquo; Précédent
                 </a>
             {% endif %}
@@ -112,23 +93,23 @@
             {% for page_num in orders.iter_pages(left_edge=2, right_edge=2, left_current=1, right_current=1) %}
                 {% if page_num %}
                     {% if page_num == orders.page %}
-                        <span class="mx-2 px-3 py-1 bg-amber-800 text-white text-sm border-2 border-amber-900 shadow-[2px_2px_0_#78350f]">
+                        <span class="px-3 py-1 bg-amber-800 text-white text-xs sm:text-sm border-2 border-amber-900 shadow-[2px_2px_0_#78350f]">
                             {{ page_num }}
                         </span>
                     {% else %}
                         <a href="{{ url_for('admin.manage_orders', page=page_num, query=query, validated=request.args.get('validated'), not_validated=request.args.get('not_validated')) }}"
-                           class="mx-2 bg-amber-700 hover:bg-amber-800 text-white px-3 py-1 text-sm border-2 border-amber-900 shadow-[2px_2px_0_#78350f] hover:shadow-[3px_3px_0_#78350f] transition-all uppercase">
+                           class="bg-amber-700 hover:bg-amber-800 text-white px-3 py-1 text-xs sm:text-sm border-2 border-amber-900 shadow-[2px_2px_0_#78350f] hover:shadow-[3px_3px_0_#78350f] transition-all uppercase">
                             {{ page_num }}
                         </a>
                     {% endif %}
                 {% else %}
-                    <span class="mx-2 text-amber-700">…</span>
+                    <span class="text-amber-700">…</span>
                 {% endif %}
             {% endfor %}
 
             {% if orders.has_next %}
                 <a href="{{ url_for('admin.manage_orders', page=orders.next_num, query=query, validated=request.args.get('validated'), not_validated=request.args.get('not_validated')) }}"
-                   class="mx-2 bg-amber-700 hover:bg-amber-800 text-white px-3 py-1 text-sm border-2 border-amber-900 shadow-[2px_2px_0_#78350f] hover:shadow-[3px_3px_0_#78350f] transition-all uppercase">
+                   class="bg-amber-700 hover:bg-amber-800 text-white px-3 py-1 text-xs sm:text-sm border-2 border-amber-900 shadow-[2px_2px_0_#78350f] hover:shadow-[3px_3px_0_#78350f] transition-all uppercase">
                     Suivant &raquo;
                 </a>
             {% endif %}
