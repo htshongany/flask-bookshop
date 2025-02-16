@@ -2,6 +2,8 @@
 
 from app.extensions import db
 from sqlalchemy.orm import validates
+from PIL import Image
+import os
 
 class Book(db.Model):
     __tablename__ = 'books'
@@ -14,6 +16,7 @@ class Book(db.Model):
     price = db.Column(db.Float, nullable=False)
     stock = db.Column(db.Integer, default=0)
     available = db.Column(db.Boolean, default=True)
+    image = db.Column(db.String(120), nullable=True)  # Nouveau champ pour l'image
 
     # Relations
     ratings = db.relationship('Rating', back_populates='book', lazy=True, cascade='all, delete-orphan')
@@ -49,3 +52,15 @@ class Book(db.Model):
         if value < 0:
             raise ValueError('Le stock ne peut pas être négatif.')
         return value
+
+    def save_image(self, image_file):
+        filename = f'book_{self.id}.jpg'
+        filepath = os.path.join('app', 'static', 'images', 'books', filename)
+
+        # Redimensionner l'image
+        image = Image.open(image_file)
+        image.thumbnail((300, 300))
+        image.save(filepath)
+
+        self.image = filename
+        db.session.commit()

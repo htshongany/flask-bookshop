@@ -1,3 +1,4 @@
+# app/bleauprints/admin/routes.py
 from flask import render_template, redirect, url_for, flash, request
 from . import admin_bp
 from app.models.book import Book
@@ -11,6 +12,8 @@ from app.extensions import db
 from flask_login import login_required, current_user
 from functools import wraps
 from werkzeug.exceptions import abort
+from werkzeug.utils import secure_filename
+import os
 
 def admin_required(f):
     @wraps(f)
@@ -51,13 +54,26 @@ def add_book():
             author=form.author.data,
             description=form.description.data,
             price=form.price.data,
-            stock=form.stock.data
+            stock=form.stock.data,
+            available=form.available.data
         )
         db.session.add(book)
+        db.session.commit()
+
+        # Gestion de l'upload de l'image
+        if form.image.data:
+            filename = secure_filename(form.image.data.filename)
+            form.image.data.save(os.path.join('app', 'static', 'images', 'books', filename))
+            book.image = filename
+        else:
+            # Si aucune image n'est téléchargée, utilisez une image par défaut
+            book.image = 'default_book.jpeg'
+        
         db.session.commit()
         flash('Le livre a été ajouté avec succès.', 'success')
         return redirect(url_for('admin.manage_books'))
     return render_template('admin/book/add_book.html', form=form)
+
 
 @admin_bp.route('/books/edit/<int:book_id>', methods=['GET', 'POST'])
 @admin_required
@@ -70,10 +86,19 @@ def edit_book(book_id):
         book.description = form.description.data
         book.price = form.price.data
         book.stock = form.stock.data
+        book.available = form.available.data
+
+        # Gestion de l'upload de l'image
+        if form.image.data:
+            filename = secure_filename(form.image.data.filename)
+            form.image.data.save(os.path.join('app', 'static', 'images', 'books', filename))
+            book.image = filename
+
         db.session.commit()
         flash('Le livre a été mis à jour avec succès.', 'success')
         return redirect(url_for('admin.manage_books'))
     return render_template('admin/book/edit_book.html', form=form, book=book)
+
 
 @admin_bp.route('/books/delete/<int:book_id>', methods=['POST'])
 @admin_required
