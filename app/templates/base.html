@@ -101,23 +101,26 @@
     <!-- Contenu principal -->
     <main class="flex-1">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    <div class="mb-8 space-y-3">
-                        {% for category, message in messages %}
-                            <div class="p-3 border-2 text-sm sm:text-base 
-                                {{ 'bg-green-100 border-green-400 text-green-900' if category == 'success' 
-                                   else 'bg-blue-100 border-blue-400 text-blue-900' if category == 'info'
-                                   else 'bg-yellow-100 border-yellow-400 text-yellow-900' if category == 'warning'
-                                   else 'bg-red-100 border-red-400 text-red-900' }}">
-                                {{ message }}
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            {% endwith %}
+            
+        <!-- Dans la section des messages flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="mb-8 space-y-3">
+                    {% for category, message in messages %}
+                        <!-- Ajout de la classe 'flash-message' -->
+                        <div class="flash-message p-3 border-2 text-sm sm:text-base 
+                            {{ 'bg-green-100 border-green-400 text-green-900' if category == 'success' 
+                            else 'bg-blue-100 border-blue-400 text-blue-900' if category == 'info'
+                            else 'bg-yellow-100 border-yellow-400 text-yellow-900' if category == 'warning'
+                            else 'bg-red-100 border-red-400 text-red-900' }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
 
-            {% block content %}{% endblock %}
+        {% block content %}{% endblock %}
         </div>
     </main>
 
@@ -130,12 +133,18 @@
         </div>
     </footer>
 
-    <!-- Script menu mobile -->
+
+    <!-- Ajouter ce script à la fin du body -->
     <script>
-        document.getElementById('mobile-menu-button').addEventListener('click', function() {
-            const menu = document.getElementById('mobile-menu');
-            menu.classList.toggle('hidden');
+    // Suppression des messages flash après 1 seconde
+    document.addEventListener('DOMContentLoaded', function() {
+        const flashMessages = document.querySelectorAll('.flash-message');
+        flashMessages.forEach(function(message) {
+            setTimeout(function() {
+                message.remove();
+            }, 2000);
         });
+    });
     </script>
 </body>
 </html>
