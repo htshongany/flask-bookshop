@@ -20,9 +20,7 @@
             <!-- Colonne gauche (Image + Prix) -->
             <div class="md:col-span-1">
                 <div class="border-2 border-amber-300 p-4 mb-4">
-                    <div class="h-64 bg-amber-100 flex items-center justify-center">
-                        <span class="text-amber-700 text-sm">IMAGE DU LIVRE</span>
-                    </div>
+                    <img src="{{ url_for('static', filename='images/books/' ~ book.image) }}" alt="Couverture du livre {{ book.title }}" class="h-64 w-full object-cover">
                 </div>
                 
                 <div class="bg-amber-50 border-2 border-amber-400 p-4">
