@@ -9,8 +9,8 @@ from werkzeug.exceptions import HTTPException
 
 @main_bp.route('/')
 def index():
-    # Récupérer les 3 livres les plus récemment mis à jour
-    recent_books = Book.query.order_by(Book.updated_at.desc()).limit(3).all()
+    # Récupérer les 3 livres les plus récemment mis à jour avec un stock supérieur à 0
+    recent_books = Book.query.filter(Book.stock > 0).order_by(Book.updated_at.desc()).limit(3).all()
     return render_template('main/index.html', recent_books=recent_books)
 
 @main_bp.route('/catalogue')
@@ -19,9 +19,12 @@ def catalogue():
     page = request.args.get('page', 1, type=int)
     
     if query:
-        books = Book.query.filter((Book.title.ilike(f'%{query}%')) | (Book.author.ilike(f'%{query}%'))).paginate(page=page, per_page=3)
+        books = Book.query.filter(
+            (Book.title.ilike(f'%{query}%')) | (Book.author.ilike(f'%{query}%')),
+            Book.stock > 0
+        ).paginate(page=page, per_page=3)
     else:
-        books = Book.query.paginate(page=page, per_page=3)
+        books = Book.query.filter(Book.stock > 0).paginate(page=page, per_page=3)
     
     return render_template('main/catalogue.html', books=books, query=query)
 
@@ -52,17 +55,26 @@ def cart():
     cart = session.get('cart', {})
     items = []
     total = 0
-    for book_id, quantity in cart.items():
+    cart_copy = cart.copy()  # Faire une copie du dictionnaire pour éviter les modifications pendant l'itération
+    
+    for book_id, quantity in cart_copy.items():
         book = Book.query.get(int(book_id))
         if book:
-            subtotal = book.price * quantity
-            total += subtotal
-            items.append({
-                'book': book,
-                'quantity': quantity,
-                'subtotal': subtotal
-            })
+            if book.stock > 0:
+                subtotal = book.price * quantity
+                total += subtotal
+                items.append({
+                    'book': book,
+                    'quantity': quantity,
+                    'subtotal': subtotal
+                })
+            else:
+                del cart[str(book_id)]
+                session['cart'] = cart
+                flash(f'Le livre "{book.title}" a été retiré du panier car il est en rupture de stock.', 'warning')
+    
     return render_template('main/cart.html', books=items, total=total)
+
 
 # Route pour mettre à jour la quantité d'un article dans le panier
 @main_bp.route('/update_cart/<int:book_id>', methods=['POST'])
